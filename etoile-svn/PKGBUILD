@@ -1,14 +1,15 @@
 # Contributor: Sebastian Nowicki <sebnow@gmail.com>
 pkgname=etoile-svn
 pkgver=4528
-pkgrel=1
+pkgrel=2
 pkgdesc="A GNUstep based user environment"
 arch=('i686' 'x86_64')
 url="http://etoileos.com"
 license=('GPL')
-depends=('llvm' 'gmp' 'dbus-core' 'postgresql-libs' 'oniguruma' 'ffmpeg'
-         'lemon' 'poppler' 'scrnsaverproto' 'libxss' 'taglib' 'libmp4v2'
+depends=('gmp' 'dbus-core' 'postgresql-libs' 'oniguruma' 'ffmpeg'
+         'lemon' 'poppler' 'libxss' 'taglib' 'libmp4v2'
          'libxcursor' 'startup-notification' 'hal')
+makedepends=('llvm')
 source=('MKMediaFile.h.patch')
 md5sums=('2d42f23fd08523231fd18ec134e0cb93')
 
@@ -38,6 +39,11 @@ build() {
 
   make || return 1
   make DESTDIR="$pkgdir/" install
+
+  # Fix symlink
+  rm "${pkgdir}${GNUSTEP_LOCAL_ROOT}/Library/Headers/AddressBook"
+  cd "$pkgdir/${GNUSTEP_LOCAL_ROOT}/Library/Headers/"
+  ln -s "${GNUSTEP_LOCAL_ROOT}/Library/Headers/Addresses" AddressBook
 
   rm -rf "$srcdir/${_svnmod}-build"
 }
