@@ -1,0 +1,46 @@
+# Contributor: Sebastian Nowicki <sebnow@gmail.com>
+pkgname=etoile-svn
+pkgver=4528
+pkgrel=1
+pkgdesc="A GNUstep based user environment"
+arch=('i686' 'x86_64')
+url="http://etoileos.com"
+license=('GPL')
+depends=('llvm' 'gmp' 'dbus-core' 'postgresql-libs' 'oniguruma' 'ffmpeg'
+         'lemon' 'poppler' 'scrnsaverproto' 'libxss' 'taglib' 'libmp4v2'
+         'libxcursor' 'startup-notification' 'hal')
+source=('MKMediaFile.h.patch')
+md5sums=('2d42f23fd08523231fd18ec134e0cb93')
+
+_svntrunk=svn://svn.gna.org/svn/etoile/trunk/Etoile
+_svnmod=Etoile
+
+build() {
+  # Setup GNUstep environment
+  . /etc/profile.d/GNUstep.sh
+
+  cd "$srcdir"
+  if [ -d $_svnmod/.svn ]; then
+    msg "Updating files..."
+    (cd $_svnmod && svn up -r $pkgver)
+  else
+    msg "Checking out files..."
+    svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
+  fi
+
+  msg "Building..."
+
+  cp -r "$srcdir/$_svnmod" "$srcdir/${_svnmod}-build"
+
+  cd "$srcdir/${_svnmod}-build"
+
+  patch -Np1 < "$startdir/MKMediaFile.h.patch"
+
+  make || return 1
+  make DESTDIR="$pkgdir/" install
+
+  rm -rf "$srcdir/${_svnmod}-build"
+}
+
+# vim:set ts=2 sw=2 et:
+
