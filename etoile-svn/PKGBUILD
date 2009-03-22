@@ -42,9 +42,9 @@ build() {
   make DESTDIR="$pkgdir/" install
 
   # Fix symlink
-  rm "${pkgdir}${GNUSTEP_LOCAL_ROOT}/Library/Headers/AddressBook"
-  cd "$pkgdir/${GNUSTEP_LOCAL_ROOT}/Library/Headers/"
-  ln -s "${GNUSTEP_LOCAL_ROOT}/Library/Headers/Addresses" AddressBook
+  cd "$pkgdir${GNUSTEP_LOCAL_ROOT}/Library/Headers/"
+  rm -f AddressBook
+  ln -s Addresses AddressBook
 
   rm -rf "$srcdir/${_svnmod}-build"
 }
